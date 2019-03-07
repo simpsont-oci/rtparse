@@ -92,7 +92,7 @@ typedef std::pair<const rtps_frame*, const rtps_heartbeat*> hb_info_pair;
 typedef std::pair<const rtps_frame*, const rtps_acknack*> an_info_pair;
 
 struct info_pair_printer_base {
-  ~info_pair_printer_base() {}
+  virtual ~info_pair_printer_base() {}
   virtual std::ostream& print(std::ostream& os) const = 0;
 protected:
   info_pair_printer_base() {}
@@ -676,8 +676,8 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
     data.reader_id = reader_id;
     data.writer_id = writer_id;
     data.writer_seq_num = writer_seq_num;
-    unregistered = unregistered;
-    disposed = disposed;
+    data.unregistered = unregistered;
+    data.disposed = disposed;
     if (participant_guid.length() == 32) {
       data.participant_guid = participant_guid;
       data.metatraffic_unicast_locator_ips = metatraffic_unicast_locator_ips;
@@ -1059,8 +1059,8 @@ std::vector<rtps_info_dst>::const_iterator find_previous_dst(const rtps_frame& f
   return old;
 }
 
-void filter_spdp_announcements(const std::vector<std::pair<const rtps_frame*, const rtps_data*>>& in, size_t fnum, const std::string& wguid, const std::string& rguid, const std::map<std::string, net_info>& nm, std::vector<std::pair<const rtps_frame*, const rtps_data*>>& out);
-void filter_spdp_announcements(const std::vector<std::pair<const rtps_frame*, const rtps_data*>>& in, size_t fnum, const std::string& wguid, const std::string& rguid, const std::map<std::string, net_info>& nm, std::vector<std::pair<const rtps_frame*, const rtps_data*>>& out) {
+void filter_spdp_announcements(const std::vector<std::pair<const rtps_frame*, const rtps_data*>>& in, size_t fnum, const std::string& wguid, const std::string& rguid, std::vector<std::pair<const rtps_frame*, const rtps_data*>>& out);
+void filter_spdp_announcements(const std::vector<std::pair<const rtps_frame*, const rtps_data*>>& in, size_t fnum, const std::string& wguid, const std::string& rguid, std::vector<std::pair<const rtps_frame*, const rtps_data*>>& out) {
   std::for_each(in.begin(), in.end(), [&](const auto& v) {
     if (v.first->frame_no >= fnum) {
       if (!v.second->participant_guid.empty()) {
@@ -1425,8 +1425,8 @@ void copy_endpoint_details_relevant_to_conversation(const endpoint_info& writer,
     std::cout << "This shouldn't happen! Publications reader for reader " << reader.guid << " doesn't show up in endpoint map." << std::endl;
   } else {
     std::vector<data_info_pair> spdp_datas;
-    filter_spdp_announcements(writer.spdp_announcements, first_first_frame, conv.writer_guid, conv.reader_guid, std::map<std::string, net_info>(), spdp_datas);
-    filter_spdp_announcements(reader.spdp_announcements, first_first_frame, conv.writer_guid, conv.reader_guid, std::map<std::string, net_info>(), spdp_datas);
+    filter_spdp_announcements(writer.spdp_announcements, first_first_frame, conv.writer_guid, conv.reader_guid, spdp_datas);
+    filter_spdp_announcements(reader.spdp_announcements, first_first_frame, conv.writer_guid, conv.reader_guid, spdp_datas);
     conv.datas = spdp_datas;
 
     std::vector<data_info_pair> sedp_datas;
@@ -1765,7 +1765,7 @@ int main(int argc, char** argv)
   if (vm.count("show-conversation-frames")) {
     string_vec clist = vm["show-conversation-frames"].as<string_vec>();
     for (auto it = clist.begin(); it != clist.end(); ++it) {
-      size_t cpos;
+      size_t cpos = 0;
       if (it->length() != 65 || (cpos = it->find(",") != 32)) {
         std::cout << "error parsing conversation! cpos = " << cpos << std::endl;
         continue;
