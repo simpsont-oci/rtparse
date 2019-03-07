@@ -1072,33 +1072,11 @@ void filter_spdp_announcements(const std::vector<std::pair<const rtps_frame*, co
   });
 }
 
-void filter_sedp_announcements(const std::vector<std::pair<const rtps_frame*, const rtps_data*>>& in, size_t fnum, const std::string& wguid, const std::string& rguid, const std::map<std::string, net_info>& nm, std::vector<std::pair<const rtps_frame*, const rtps_data*>>& out);
-void filter_sedp_announcements(const std::vector<std::pair<const rtps_frame*, const rtps_data*>>& in, size_t fnum, const std::string& wguid, const std::string& rguid, const std::map<std::string, net_info>& nm, std::vector<std::pair<const rtps_frame*, const rtps_data*>>& out) {
+void filter_sedp_announcements(const std::vector<std::pair<const rtps_frame*, const rtps_data*>>& in, size_t fnum, const std::string& wguid, const std::string& rguid, std::vector<std::pair<const rtps_frame*, const rtps_data*>>& out);
+void filter_sedp_announcements(const std::vector<std::pair<const rtps_frame*, const rtps_data*>>& in, size_t fnum, const std::string& wguid, const std::string& rguid, std::vector<std::pair<const rtps_frame*, const rtps_data*>>& out) {
   std::for_each(in.begin(), in.end(), [&](const auto& v) {
     if (v.first->frame_no >= fnum) {
       if (!v.second->endpoint_guid.empty()) {
-        /*if (v.second->endpoint_guid == wguid) {
-          std::vector<rtps_info_dst>::const_iterator idit;
-          if ((idit = find_previous_dst(*(v.first), v.second->sm_order)) != v.first->info_dst_vec.end()) {
-            if (idit->guid_prefix == rguid.substr(0, 24)) {
-              out.push_back(v);
-            }
-          } else {
-            auto it = nm.find(v.first->dst_ip);
-            if (it != nm.end()) {
-              out.push_back(v);
-            }
-          }
-        } else if (v.second->endpoint_guid == rguid) {
-          std::vector<rtps_info_dst>::const_iterator idit;
-          if ((idit = find_previous_dst(*(v.first), v.second->sm_order)) != v.first->info_dst_vec.end()) {
-            if (idit->guid_prefix == wguid.substr(0, 24)) {
-              out.push_back(v);
-            }
-          } else {
-            out.push_back(v);
-          }
-        }*/
         if (v.second->endpoint_guid == wguid || v.second->endpoint_guid == rguid) {
           out.push_back(v);
         }
@@ -1432,7 +1410,7 @@ void copy_endpoint_details_relevant_to_conversation(const endpoint_info& writer,
     std::vector<data_info_pair> sedp_datas;
     filter_info_pair_vec_by_frame_and_reader_dst_full(writer.sedp_announcements, first_first_frame, reader.guid.substr(0, 24) + "000003c7", rpubrit->second.dst_net_map, sedp_datas);
     filter_info_pair_vec_by_frame_and_reader_dst_full(reader.sedp_announcements, first_first_frame, writer.guid.substr(0, 24) + "000004c7", wsubrit->second.dst_net_map, sedp_datas);
-    filter_sedp_announcements(sedp_datas, first_first_frame, conv.writer_guid, conv.reader_guid, std::map<std::string, net_info>(), conv.datas);
+    filter_sedp_announcements(sedp_datas, first_first_frame, conv.writer_guid, conv.reader_guid, conv.datas);
   }
   filter_info_pair_vec_by_frame_and_reader_dst_full(writer.datas, reader.first_evidence_frame, conv.reader_guid, reader.dst_net_map, conv.datas);
   filter_info_pair_vec_by_frame_and_reader_dst_full(writer.gaps, reader.first_evidence_frame, conv.reader_guid, reader.dst_net_map, conv.gaps);
