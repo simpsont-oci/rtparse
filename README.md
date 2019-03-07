@@ -1,6 +1,9 @@
 # RT-Parse
 > An analysis tool for tracing RTPS interactions within PCAP (TShark) capture files
 
+### Status
+[![Build Status](https://travis-ci.org/simpsont-oci/rtparse.png)](https://travis-ci.org/simpsont-oci/rtparse)
+
 ## Building
 
 ### Setup
