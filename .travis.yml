@@ -9,7 +9,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - libboost-dev
+      - libboost-program-options-dev
       - g++-8
       - cmake
 
