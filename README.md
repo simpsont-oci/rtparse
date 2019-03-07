@@ -31,6 +31,11 @@ $ make
 ```shell
 $ ./rtparse --help
 ```
+> RT-Parse currently only runs against the tshark verbose output from a RTPS pcap file
+```shell
+$ tshark -r example.pcapng -V | tee example.tshark.verbose.txt
+$ ./rtparse --file example.tshark.verbose.txt
+```
 
 ## License
 
