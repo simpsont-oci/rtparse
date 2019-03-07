@@ -12,7 +12,6 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libboost-program-options-dev
-      - g++-8
       - cmake
 
 branches:
