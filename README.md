@@ -37,6 +37,15 @@ $ tshark -r example.pcapng -V | tee example.tshark.verbose.txt
 $ ./rtparse --file example.tshark.verbose.txt
 ```
 
+### Contributing / Future Work
+> A few thoughts for future development
+- Separation of frames summary and frames output (split --show-conversation-frames)
+- Support for parsing & frames output for raw pcap files (bypassing tshark, allowing frames to be reloaded into pcap analysis tool like wireshark)
+- Support for parsing / analyzing DATA_FRAG, HEARTBEAT_FRAG, and NACK_FRAG submessages
+- Support for filtering by "end" of conversation (make use of unregister / dispose messages)
+- Latency and throughput analysis?
+- Additional support for security?
+
 ## License
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
