@@ -35,15 +35,15 @@ void copy_endpoint_details_relevant_to_conversation(const endpoint_info& writer,
 }
 
 void gather_conversation_info(const std::map<size_t, rtps_frame>& frames, const endpoint_map& em, conversation_map& cm) {
-  for (auto fit = frames.begin(); fit != frames.end(); ++fit) {
+  for (const auto & frame : frames) {
     conversation_info info;
-    info.domain_id = fit->second.domain_id;
-    info.first_evidence_frame = fit->second.frame_no;
-    info.first_evidence_time = fit->second.frame_reference_time;
-    for (auto dit = fit->second.data_vec.begin(); dit != fit->second.data_vec.end(); ++dit) {
-      info.writer_guid = fit->second.guid_prefix + dit->writer_id;
+    info.domain_id = frame.second.domain_id;
+    info.first_evidence_frame = frame.second.frame_no;
+    info.first_evidence_time = frame.second.frame_reference_time;
+    for (auto dit = frame.second.data_vec.begin(); dit != frame.second.data_vec.end(); ++dit) {
+      info.writer_guid = frame.second.guid_prefix + dit->writer_id;
       std::vector<rtps_info_dst>::const_iterator idit;
-      if ((idit = find_previous_dst(fit->second, dit->sm_order)) != fit->second.info_dst_vec.end()) {
+      if ((idit = find_previous_dst(frame.second, dit->sm_order)) != frame.second.info_dst_vec.end()) {
         const rtps_info_dst& dst = *idit;
         info.reader_guid = dst.guid_prefix + dit->reader_id;
         auto weit = em.find(info.writer_guid);
@@ -56,16 +56,16 @@ void gather_conversation_info(const std::map<size_t, rtps_frame>& frames, const 
           auto wcit = cm.find(info.writer_guid);
           if (wcit == cm.end()) {
             copy_endpoint_details_relevant_to_conversation(weit->second, reit->second, em, info);
-            info.datas.emplace_back(data_info_pair(&(fit->second), &(*dit)));
+            info.datas.emplace_back(data_info_pair(&(frame.second), &(*dit)));
             cm[info.writer_guid][info.reader_guid] = info;
           } else {
             auto rcit = wcit->second.find(info.reader_guid);
             if (rcit == wcit->second.end()) {
               copy_endpoint_details_relevant_to_conversation(weit->second, reit->second, em, info);
-              info.datas.emplace_back(data_info_pair(&(fit->second), &(*dit)));
+              info.datas.emplace_back(data_info_pair(&(frame.second), &(*dit)));
               wcit->second[info.reader_guid] = info;
             } else {
-              rcit->second.datas.emplace_back(data_info_pair(&(fit->second), &(*dit)));
+              rcit->second.datas.emplace_back(data_info_pair(&(frame.second), &(*dit)));
             }
           }
         }
@@ -99,10 +99,10 @@ void gather_conversation_info(const std::map<size_t, rtps_frame>& frames, const 
         }
       }
     }
-    for (auto git = fit->second.gap_vec.begin(); git != fit->second.gap_vec.end(); ++git) {
-      info.writer_guid = fit->second.guid_prefix + git->writer_id;
+    for (auto git = frame.second.gap_vec.begin(); git != frame.second.gap_vec.end(); ++git) {
+      info.writer_guid = frame.second.guid_prefix + git->writer_id;
       std::vector<rtps_info_dst>::const_iterator idit;
-      if ((idit = find_previous_dst(fit->second, git->sm_order)) != fit->second.info_dst_vec.end()) {
+      if ((idit = find_previous_dst(frame.second, git->sm_order)) != frame.second.info_dst_vec.end()) {
         const rtps_info_dst& dst = *idit;
         info.reader_guid = dst.guid_prefix + git->reader_id;
         auto weit = em.find(info.writer_guid);
@@ -115,25 +115,25 @@ void gather_conversation_info(const std::map<size_t, rtps_frame>& frames, const 
           auto wcit = cm.find(info.writer_guid);
           if (wcit == cm.end()) {
             copy_endpoint_details_relevant_to_conversation(weit->second, reit->second, em, info);
-            info.gaps.emplace_back(gap_info_pair(&(fit->second), &(*git)));
+            info.gaps.emplace_back(gap_info_pair(&(frame.second), &(*git)));
             cm[info.writer_guid][info.reader_guid] = info;
           } else {
             auto rcit = wcit->second.find(info.reader_guid);
             if (rcit == wcit->second.end()) {
               copy_endpoint_details_relevant_to_conversation(weit->second, reit->second, em, info);
-              info.gaps.emplace_back(gap_info_pair(&(fit->second), &(*git)));
+              info.gaps.emplace_back(gap_info_pair(&(frame.second), &(*git)));
               wcit->second[info.reader_guid] = info;
             } else {
-              rcit->second.gaps.emplace_back(gap_info_pair(&(fit->second), &(*git)));
+              rcit->second.gaps.emplace_back(gap_info_pair(&(frame.second), &(*git)));
             }
           }
         }
       }
     }
-    for (auto hit = fit->second.heartbeat_vec.begin(); hit != fit->second.heartbeat_vec.end(); ++hit) {
-      info.writer_guid = fit->second.guid_prefix + hit->writer_id;
+    for (auto hit = frame.second.heartbeat_vec.begin(); hit != frame.second.heartbeat_vec.end(); ++hit) {
+      info.writer_guid = frame.second.guid_prefix + hit->writer_id;
       std::vector<rtps_info_dst>::const_iterator idit;
-      if ((idit = find_previous_dst(fit->second, hit->sm_order)) != fit->second.info_dst_vec.end()) {
+      if ((idit = find_previous_dst(frame.second, hit->sm_order)) != frame.second.info_dst_vec.end()) {
         const rtps_info_dst& dst = *idit;
         info.reader_guid = dst.guid_prefix + hit->reader_id;
         auto weit = em.find(info.writer_guid);
@@ -146,25 +146,25 @@ void gather_conversation_info(const std::map<size_t, rtps_frame>& frames, const 
           auto wcit = cm.find(info.writer_guid);
           if (wcit == cm.end()) {
             copy_endpoint_details_relevant_to_conversation(weit->second, reit->second, em, info);
-            info.heartbeats.emplace_back(hb_info_pair(&(fit->second), &(*hit)));
+            info.heartbeats.emplace_back(hb_info_pair(&(frame.second), &(*hit)));
             cm[info.writer_guid][info.reader_guid] = info;
           } else {
             auto rcit = wcit->second.find(info.reader_guid);
             if (rcit == wcit->second.end()) {
               copy_endpoint_details_relevant_to_conversation(weit->second, reit->second, em, info);
-              info.heartbeats.emplace_back(hb_info_pair(&(fit->second), &(*hit)));
+              info.heartbeats.emplace_back(hb_info_pair(&(frame.second), &(*hit)));
               wcit->second[info.reader_guid] = info;
             } else {
-              rcit->second.heartbeats.emplace_back(hb_info_pair(&(fit->second), &(*hit)));
+              rcit->second.heartbeats.emplace_back(hb_info_pair(&(frame.second), &(*hit)));
             }
           }
         }
       }
     }
-    for (auto ait = fit->second.acknack_vec.begin(); ait != fit->second.acknack_vec.end(); ++ait) {
-      info.reader_guid = fit->second.guid_prefix + ait->reader_id;
+    for (auto ait = frame.second.acknack_vec.begin(); ait != frame.second.acknack_vec.end(); ++ait) {
+      info.reader_guid = frame.second.guid_prefix + ait->reader_id;
       std::vector<rtps_info_dst>::const_iterator idit;
-      if ((idit = find_previous_dst(fit->second, ait->sm_order)) != fit->second.info_dst_vec.end()) {
+      if ((idit = find_previous_dst(frame.second, ait->sm_order)) != frame.second.info_dst_vec.end()) {
         const rtps_info_dst& dst = *idit;
         info.writer_guid = dst.guid_prefix + ait->writer_id;
         auto weit = em.find(info.writer_guid);
@@ -177,16 +177,16 @@ void gather_conversation_info(const std::map<size_t, rtps_frame>& frames, const 
           auto wcit = cm.find(info.writer_guid);
           if (wcit == cm.end()) {
             copy_endpoint_details_relevant_to_conversation(weit->second, reit->second, em, info);
-            info.acknacks.emplace_back(an_info_pair(&(fit->second), &(*ait)));
+            info.acknacks.emplace_back(an_info_pair(&(frame.second), &(*ait)));
             cm[info.writer_guid][info.reader_guid] = info;
           } else {
             auto rcit = wcit->second.find(info.reader_guid);
             if (rcit == wcit->second.end()) {
               copy_endpoint_details_relevant_to_conversation(weit->second, reit->second, em, info);
-              info.acknacks.emplace_back(an_info_pair(&(fit->second), &(*ait)));
+              info.acknacks.emplace_back(an_info_pair(&(frame.second), &(*ait)));
               wcit->second[info.reader_guid] = info;
             } else {
-              rcit->second.acknacks.emplace_back(an_info_pair(&(fit->second), &(*ait)));
+              rcit->second.acknacks.emplace_back(an_info_pair(&(frame.second), &(*ait)));
             }
           }
         }

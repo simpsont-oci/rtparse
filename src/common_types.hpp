@@ -1,8 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
-typedef std::vector<std::string> string_vec;
-
+using string_vec = std::vector<std::string>;
 

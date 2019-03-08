@@ -5,7 +5,7 @@
 
 #include <map>
 
-typedef std::map<size_t, string_vec> tshark_frame_map;
+using tshark_frame_map = std::map<size_t, string_vec>;
 
 bool process_frame_header(const string_vec& frame_header, rtps_frame& frame);
 bool process_eth_header(const string_vec& eth_header, rtps_frame& frame);

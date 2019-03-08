@@ -10,18 +10,18 @@ bool process_frame_header(const string_vec& frame_header, rtps_frame& frame) {
   double frame_epoch_time = -1.0;
   double frame_reference_time = -1.0;
 
-  for (auto it = frame_header.begin(); it != frame_header.end(); ++it) {
+  for (const auto & it : frame_header) {
     size_t tpos, npos, rpos;
-    if ((tpos = it->find("Epoch Time: ")) != std::string::npos) {
-      std::stringstream ss(it->substr(tpos + 12));
+    if ((tpos = it.find("Epoch Time: ")) != std::string::npos) {
+      std::stringstream ss(it.substr(tpos + 12));
       //std::cout << ss.str() << std::endl;
       ss >> frame_epoch_time;
-    } else if ((npos = it->find("Frame Number: ")) != std::string::npos) {
-      std::stringstream ss(it->substr(npos + 14));
+    } else if ((npos = it.find("Frame Number: ")) != std::string::npos) {
+      std::stringstream ss(it.substr(npos + 14));
       //std::cout << ss.str() << std::endl;
       ss >> frame_no;
-    } else if ((rpos = it->find("[Time since reference or first frame: ")) != std::string::npos) {
-      std::stringstream ss(it->substr(rpos + 38)); // This will have some cruft on the end, but stringstream's >> should ignore it
+    } else if ((rpos = it.find("[Time since reference or first frame: ")) != std::string::npos) {
+      std::stringstream ss(it.substr(rpos + 38)); // This will have some cruft on the end, but stringstream's >> should ignore it
       //std::cout << ss.str() << std::endl;
       ss >> frame_reference_time;
     }
@@ -43,18 +43,18 @@ bool process_eth_header(const string_vec& eth_header, rtps_frame& frame) {
 
   bool linux_cooked_capture = (eth_header.front() == "Linux cooked capture");
 
-  for (auto it = eth_header.begin(); it != eth_header.end(); ++it) {
+  for (const auto & it : eth_header) {
     size_t spos, dpos;
-    if ((spos = it->find("Source: ")) != std::string::npos) {
-      std::string full = it->substr(spos + 8);
+    if ((spos = it.find("Source: ")) != std::string::npos) {
+      std::string full = it.substr(spos + 8);
       if ((spos = full.find(" (")) != std::string::npos) {
         src_mac = full.substr(spos + 2, 17);
       } else {
         src_mac = full;
       }
       //std::cout << src_mac << std::endl;
-    } else if ((dpos = it->find("Destination: ")) != std::string::npos) {
-      std::string full = it->substr(dpos + 13);
+    } else if ((dpos = it.find("Destination: ")) != std::string::npos) {
+      std::string full = it.substr(dpos + 13);
       if ((dpos = full.find(" (")) != std::string::npos) {
         dst_mac = full.substr(dpos + 2, 17);
       } else {
@@ -88,22 +88,22 @@ bool process_ip_header(const string_vec& ip_header, rtps_frame& frame, ip_frag_m
   std::string id;
   size_t frag_off = 0;
 
-  for (auto it = ip_header.begin(); it != ip_header.end(); ++it) {
+  for (const auto & it : ip_header) {
     size_t spos, dpos, fpos, ipos;
-    if ((spos = it->find("Source: ")) != std::string::npos) {
-      src_ip = it->substr(spos + 8);
+    if ((spos = it.find("Source: ")) != std::string::npos) {
+      src_ip = it.substr(spos + 8);
       //std::cout << src_ip << std::endl;
-    } else if ((dpos = it->find("Destination: ")) != std::string::npos) {
-      dst_ip = it->substr(dpos + 13);
+    } else if ((dpos = it.find("Destination: ")) != std::string::npos) {
+      dst_ip = it.substr(dpos + 13);
       //std::cout << dst_ip << std::endl;
-    } else if (it->find("More fragments: Set") != std::string::npos) {
+    } else if (it.find("More fragments: Set") != std::string::npos) {
       ip_fragmentation = true;
-    } else if ((fpos = it->find("Fragment offset: ")) != std::string::npos) {
-      std::string full = it->substr(fpos + 17);
+    } else if ((fpos = it.find("Fragment offset: ")) != std::string::npos) {
+      std::string full = it.substr(fpos + 17);
       std::stringstream ss(full);
       ss >> frag_off;
-    } else if ((ipos = it->find("Identification: ")) != std::string::npos) {
-      id = it->substr(ipos + 16);
+    } else if ((ipos = it.find("Identification: ")) != std::string::npos) {
+      id = it.substr(ipos + 16);
     }
   }
 
@@ -138,16 +138,16 @@ bool process_udp_header(const string_vec& udp_header, rtps_frame& frame) {
   std::string dst_port;
   size_t udp_length = 0;
 
-  for (auto it = udp_header.begin(); it != udp_header.end(); ++it) {
+  for (const auto & it : udp_header) {
     size_t spos, dpos, lpos;
-    if ((spos = it->find("Source Port: ")) != std::string::npos) {
-      src_port = it->substr(spos + 13);
+    if ((spos = it.find("Source Port: ")) != std::string::npos) {
+      src_port = it.substr(spos + 13);
       //std::cout << src_port << std::endl;
-    } else if ((dpos = it->find("Destination Port: ")) != std::string::npos) {
-      dst_port = it->substr(dpos + 18);
+    } else if ((dpos = it.find("Destination Port: ")) != std::string::npos) {
+      dst_port = it.substr(dpos + 18);
       //std::cout << dst_port << std::endl;
-    } else if ((dpos = it->find("Length: ")) != std::string::npos) {
-      std::stringstream ss(it->substr(dpos + 8));
+    } else if ((dpos = it.find("Length: ")) != std::string::npos) {
+      std::stringstream ss(it.substr(dpos + 8));
       ss >> udp_length;
       //std::cout << udp_length << std::endl;
     }
@@ -167,13 +167,13 @@ bool process_rtps_header(const string_vec& rtps_header, rtps_frame& frame) {
   uint16_t domain_id = 0xFFFF;
   std::string guid_prefix;
 
-  for (auto it = rtps_header.begin(); it != rtps_header.end(); ++it) {
+  for (const auto & it : rtps_header) {
     size_t gpos, dpos;
-    if ((gpos = it->find("guidPrefix: ")) != std::string::npos) {
-      guid_prefix = it->substr(gpos + 12);
+    if ((gpos = it.find("guidPrefix: ")) != std::string::npos) {
+      guid_prefix = it.substr(gpos + 12);
       //std::cout << guid_prefix << std::endl;
-    } else if ((dpos = it->find("domain_id: ")) != std::string::npos) {
-      std::stringstream ss(it->substr(dpos + 11));
+    } else if ((dpos = it.find("domain_id: ")) != std::string::npos) {
+      std::stringstream ss(it.substr(dpos + 11));
       ss >> domain_id;
       //std::cout << domain_id << std::endl;
     }
@@ -202,10 +202,10 @@ bool process_rtps_info_dst_submessage(const string_vec& rtps_submessage, rtps_fr
     }
   }
 
-  for (auto it = rtps_submessage.begin(); it != rtps_submessage.end(); ++it) {
+  for (const auto & it : rtps_submessage) {
     size_t gpos;
-    if ((gpos = it->find("guidPrefix: ")) != std::string::npos) {
-      guid_prefix = it->substr(gpos + 12);
+    if ((gpos = it.find("guidPrefix: ")) != std::string::npos) {
+      guid_prefix = it.substr(gpos + 12);
       //std::cout << " - guid_prefix = " << guid_prefix << std::endl;
     }
   }
@@ -226,7 +226,7 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
   uint16_t flags = 0xFFFF;
   std::string reader_id;
   std::string writer_id;
-  size_t writer_seq_num;
+  size_t writer_seq_num = 0;
   std::string participant_guid;
   string_vec metatraffic_unicast_locator_ips;
   string_vec metatraffic_unicast_locator_ports;
@@ -306,9 +306,9 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
       std::stringstream ss(full);
       std::string kind_comma, ip_port_paren;
       ss >> kind_comma >> ip_port_paren;
-      auto cpos = ip_port_paren.find(":");
+      auto cpos = ip_port_paren.find(':');
       metatraffic_unicast_locator_ips.emplace_back(ip_port_paren.substr(0, cpos));
-      metatraffic_unicast_locator_ports.emplace_back(ip_port_paren.substr(cpos + 1, ip_port_paren.find(")") - (cpos + 1)));
+      metatraffic_unicast_locator_ports.emplace_back(ip_port_paren.substr(cpos + 1, ip_port_paren.find(')') - (cpos + 1)));
       //std::cout << " - metatraffic_unicast_locator_ip = " << metatraffic_unicast_locator_ips.back() << std::endl;
       //std::cout << " - metatraffic_unicast_locator_port = " << metatraffic_unicast_locator_ports.back() << std::endl;
     } else if ((mulpos = it->find("  PID_METATRAFFIC_MULTICAST_LOCATOR (")) != std::string::npos) {
@@ -316,9 +316,9 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
       std::stringstream ss(full);
       std::string kind_comma, ip_port_paren;
       ss >> kind_comma >> ip_port_paren;
-      auto cpos = ip_port_paren.find(":");
+      auto cpos = ip_port_paren.find(':');
       metatraffic_multicast_locator_ips.emplace_back(ip_port_paren.substr(0, cpos));
-      metatraffic_multicast_locator_ports.emplace_back(ip_port_paren.substr(cpos + 1, ip_port_paren.find(")") - (cpos + 1)));
+      metatraffic_multicast_locator_ports.emplace_back(ip_port_paren.substr(cpos + 1, ip_port_paren.find(')') - (cpos + 1)));
       //std::cout << " - metatraffic_multicast_locator_ip = " << metatraffic_multicast_locator_ips.back() << std::endl;
       //std::cout << " - metatraffic_multicast_locator_port = " << metatraffic_multicast_locator_ports.back() << std::endl;
     } else if ((mulpos = it->find("  PID_UNICAST_LOCATOR (")) != std::string::npos) {
@@ -326,9 +326,9 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
       std::stringstream ss(full);
       std::string kind_comma, ip_port_paren;
       ss >> kind_comma >> ip_port_paren;
-      auto cpos = ip_port_paren.find(":");
+      auto cpos = ip_port_paren.find(':');
       unicast_locator_ips.emplace_back(ip_port_paren.substr(0, cpos));
-      unicast_locator_ports.emplace_back(ip_port_paren.substr(cpos + 1, ip_port_paren.find(")") - (cpos + 1)));
+      unicast_locator_ports.emplace_back(ip_port_paren.substr(cpos + 1, ip_port_paren.find(')') - (cpos + 1)));
       //std::cout << " - unicast_locator_ip = " << unicast_locator_ips.back() << std::endl;
       //std::cout << " - unicast_locator_port = " << unicast_locator_ports.back() << std::endl;
     } else if ((mulpos = it->find("  PID_MULTICAST_LOCATOR (")) != std::string::npos) {
@@ -336,9 +336,9 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
       std::stringstream ss(full);
       std::string kind_comma, ip_port_paren;
       ss >> kind_comma >> ip_port_paren;
-      auto cpos = ip_port_paren.find(":");
+      auto cpos = ip_port_paren.find(':');
       multicast_locator_ips.emplace_back(ip_port_paren.substr(0, cpos));
-      multicast_locator_ports.emplace_back(ip_port_paren.substr(cpos + 1, ip_port_paren.find(")") - (cpos + 1)));
+      multicast_locator_ports.emplace_back(ip_port_paren.substr(cpos + 1, ip_port_paren.find(')') - (cpos + 1)));
       //std::cout << " - multicast_locator_ip = " << multicast_locator_ips.back() << std::endl;
       //std::cout << " - multicast_locator_port = " << multicast_locator_ports.back() << std::endl;
     } else if ((rwpos = it->find("  Unknown (0xb002)")) != std::string::npos) {
@@ -408,36 +408,36 @@ bool process_rtps_gap_submessage(const string_vec& rtps_submessage, rtps_frame& 
     }
   }
 
-  for (auto it = rtps_submessage.begin(); it != rtps_submessage.end(); ++it) {
+  for (const auto & it : rtps_submessage) {
     size_t rpos, wpos, bpos;
-    if ((rpos = it->find("readerEntityId: 0x")) != std::string::npos) {
-      reader_id = it->substr(rpos + 18, 8);
+    if ((rpos = it.find("readerEntityId: 0x")) != std::string::npos) {
+      reader_id = it.substr(rpos + 18, 8);
       //std::cout << " - reader_id = " << reader_id << std::endl;
-    } else if ((rpos = it->find("readerEntityId: ")) != std::string::npos) {
-      std::string full = it->substr(rpos + 16);
+    } else if ((rpos = it.find("readerEntityId: ")) != std::string::npos) {
+      std::string full = it.substr(rpos + 16);
       if ((rpos = full.find("(0x")) != std::string::npos) {
         reader_id = full.substr(rpos + 3, 8);
         //std::cout << " - reader_id = " << reader_id << std::endl;
       }
-    } else if ((wpos = it->find("writerEntityId: 0x")) != std::string::npos) {
-      writer_id = it->substr(wpos + 18, 8);
+    } else if ((wpos = it.find("writerEntityId: 0x")) != std::string::npos) {
+      writer_id = it.substr(wpos + 18, 8);
       //std::cout << " - writer_id = " << writer_id << std::endl;
-    } else if ((wpos = it->find("writerEntityId: ")) != std::string::npos) {
-      std::string full = it->substr(wpos + 16);
+    } else if ((wpos = it.find("writerEntityId: ")) != std::string::npos) {
+      std::string full = it.substr(wpos + 16);
       if ((wpos = full.find("(0x")) != std::string::npos) {
         writer_id = full.substr(wpos + 3, 8);
         //std::cout << " - writer_id = " << writer_id << std::endl;
       }
-    } else if ((bpos = it->find("gapStart: ")) != std::string::npos) {
-      std::string full = it->substr(bpos + 10);
+    } else if ((bpos = it.find("gapStart: ")) != std::string::npos) {
+      std::string full = it.substr(bpos + 10);
       std::stringstream ss(full);
       ss >> gap_start;
-    } else if ((bpos = it->find("bitmapBase: ")) != std::string::npos) {
-      std::string full = it->substr(bpos + 12);
+    } else if ((bpos = it.find("bitmapBase: ")) != std::string::npos) {
+      std::string full = it.substr(bpos + 12);
       std::stringstream ss(full);
       ss >> bitmap_base;
-    } else if ((bpos = it->find("bitmap: ")) != std::string::npos) {
-      bitmap = it->substr(bpos + 8);
+    } else if ((bpos = it.find("bitmap: ")) != std::string::npos) {
+      bitmap = it.substr(bpos + 8);
     }
   }
 
@@ -461,8 +461,8 @@ bool process_rtps_heartbeat_submessage(const string_vec& rtps_submessage, rtps_f
   uint16_t flags = 0xFFFF;
   std::string reader_id;
   std::string writer_id;
-  size_t first_sequence_number;
-  size_t last_sequence_number;
+  size_t first_sequence_number = 0;
+  size_t last_sequence_number = 0;
 
   //std::cout << "heartbeat submessage:" << std::endl;
   if (rtps_submessage.size() > 1) {
@@ -474,33 +474,33 @@ bool process_rtps_heartbeat_submessage(const string_vec& rtps_submessage, rtps_f
     }
   }
 
-  for (auto it = rtps_submessage.begin(); it != rtps_submessage.end(); ++it) {
+  for (const auto & it : rtps_submessage) {
     size_t rpos, wpos, spos;
-    if ((rpos = it->find("readerEntityId: 0x")) != std::string::npos) {
-      reader_id = it->substr(rpos + 18, 8);
+    if ((rpos = it.find("readerEntityId: 0x")) != std::string::npos) {
+      reader_id = it.substr(rpos + 18, 8);
       //std::cout << " - reader_id = " << reader_id << std::endl;
-    } else if ((rpos = it->find("readerEntityId: ")) != std::string::npos) {
-      std::string full = it->substr(rpos + 16);
+    } else if ((rpos = it.find("readerEntityId: ")) != std::string::npos) {
+      std::string full = it.substr(rpos + 16);
       if ((rpos = full.find("(0x")) != std::string::npos) {
         reader_id = full.substr(rpos + 3, 8);
         //std::cout << " - reader_id = " << reader_id << std::endl;
       }
-    } else if ((wpos = it->find("writerEntityId: 0x")) != std::string::npos) {
-      writer_id = it->substr(wpos + 18, 8);
+    } else if ((wpos = it.find("writerEntityId: 0x")) != std::string::npos) {
+      writer_id = it.substr(wpos + 18, 8);
       //std::cout << " - writer_id = " << writer_id << std::endl;
-    } else if ((wpos = it->find("writerEntityId: ")) != std::string::npos) {
-      std::string full = it->substr(wpos + 16);
+    } else if ((wpos = it.find("writerEntityId: ")) != std::string::npos) {
+      std::string full = it.substr(wpos + 16);
       if ((wpos = full.find("(0x")) != std::string::npos) {
         writer_id = full.substr(wpos + 3, 8);
         //std::cout << " - writer_id = " << writer_id << std::endl;
       }
-    } else if ((spos = it->find("firstAvailableSeqNumber: ")) != std::string::npos) {
-      std::string full = it->substr(spos + 25);
+    } else if ((spos = it.find("firstAvailableSeqNumber: ")) != std::string::npos) {
+      std::string full = it.substr(spos + 25);
       std::stringstream ss(full);
       ss >> first_sequence_number;
       //std::cout << " - first_sequence_number = " << first_sequence_number << std::endl;
-    } else if ((spos = it->find("lastSeqNumber: ")) != std::string::npos) {
-      std::string full = it->substr(spos + 15);
+    } else if ((spos = it.find("lastSeqNumber: ")) != std::string::npos) {
+      std::string full = it.substr(spos + 15);
       std::stringstream ss(full);
       ss >> last_sequence_number;
       //std::cout << " - last_sequence_number = " << last_sequence_number << std::endl;
@@ -539,32 +539,32 @@ bool process_rtps_acknack_submessage(const string_vec& rtps_submessage, rtps_fra
     }
   }
 
-  for (auto it = rtps_submessage.begin(); it != rtps_submessage.end(); ++it) {
+  for (const auto & it : rtps_submessage) {
     size_t rpos, wpos, bpos;
-    if ((rpos = it->find("readerEntityId: 0x")) != std::string::npos) {
-      reader_id = it->substr(rpos + 18, 8);
+    if ((rpos = it.find("readerEntityId: 0x")) != std::string::npos) {
+      reader_id = it.substr(rpos + 18, 8);
       //std::cout << " - reader_id = " << reader_id << std::endl;
-    } else if ((rpos = it->find("readerEntityId: ")) != std::string::npos) {
-      std::string full = it->substr(rpos + 16);
+    } else if ((rpos = it.find("readerEntityId: ")) != std::string::npos) {
+      std::string full = it.substr(rpos + 16);
       if ((rpos = full.find("(0x")) != std::string::npos) {
         reader_id = full.substr(rpos + 3, 8);
         //std::cout << " - reader_id = " << reader_id << std::endl;
       }
-    } else if ((wpos = it->find("writerEntityId: 0x")) != std::string::npos) {
-      writer_id = it->substr(wpos + 18, 8);
+    } else if ((wpos = it.find("writerEntityId: 0x")) != std::string::npos) {
+      writer_id = it.substr(wpos + 18, 8);
       //std::cout << " - writer_id = " << writer_id << std::endl;
-    } else if ((wpos = it->find("writerEntityId: ")) != std::string::npos) {
-      std::string full = it->substr(wpos + 16);
+    } else if ((wpos = it.find("writerEntityId: ")) != std::string::npos) {
+      std::string full = it.substr(wpos + 16);
       if ((wpos = full.find("(0x")) != std::string::npos) {
         writer_id = full.substr(wpos + 3, 8);
         //std::cout << " - writer_id = " << writer_id << std::endl;
       }
-    } else if ((bpos = it->find("bitmapBase: ")) != std::string::npos) {
-      std::string full = it->substr(bpos + 12);
+    } else if ((bpos = it.find("bitmapBase: ")) != std::string::npos) {
+      std::string full = it.substr(bpos + 12);
       std::stringstream ss(full);
       ss >> bitmap_base;
-    } else if ((bpos = it->find("bitmap: ")) != std::string::npos) {
-      bitmap = it->substr(bpos + 8);
+    } else if ((bpos = it.find("bitmap: ")) != std::string::npos) {
+      bitmap = it.substr(bpos + 8);
     }
   }
 
@@ -585,11 +585,11 @@ bool process_rtps_acknack_submessage(const string_vec& rtps_submessage, rtps_fra
 bool process_rtps_submessage(const string_vec& rtps_submessage, rtps_frame& frame, size_t sm_order)
 {
   bool result = false;
-  if (rtps_submessage.size() != 0) {
+  if (!rtps_submessage.empty()) {
     size_t spos;
     if ((spos = rtps_submessage.front().find("submessageId: ")) != std::string::npos) {
       std::string sm_type = rtps_submessage.front().substr(spos + 14);
-      sm_type = sm_type.substr(0, sm_type.find(" "));
+      sm_type = sm_type.substr(0, sm_type.find(' '));
       //std::cout << sm_type << std::endl;
       if (sm_type == "INFO_DST") {
         result = process_rtps_info_dst_submessage(rtps_submessage, frame, sm_order);
@@ -627,22 +627,22 @@ void process_frame(const string_vec& tshark_frame_data, std::map<size_t, rtps_fr
   string_vec rtps_header;
   std::vector<string_vec> rtps_submessages;
 
-  for (auto it = tshark_frame_data.begin(); it != tshark_frame_data.end(); ++it) {
-    if (eth_header.size() == 0 && it->substr(0, 8) != "Ethernet" && *it != "Linux cooked capture") {
-      frame_header.push_back(*it);
-    } else if (ip_header.size() == 0 && it->substr(0, 17) != "Internet Protocol") {
-      eth_header.push_back(*it);
-    } else if (udp_header.size() == 0 && it->substr(0, 22) != "User Datagram Protocol") {
-      ip_header.push_back(*it);
-    } else if (rtps_header.size() == 0 && it->substr(0, 41) != "Real-Time Publish-Subscribe Wire Protocol") {
-      udp_header.push_back(*it);
-    } else if (rtps_submessages.size() == 0 && it->find("submessageId:") == std::string::npos) {
-      rtps_header.push_back(*it);
-    } else if (it->find("submessageId:") != std::string::npos) {
-      rtps_submessages.push_back(string_vec());
-      rtps_submessages.back().push_back(*it);
+  for (const auto & it : tshark_frame_data) {
+    if (eth_header.empty() && it.substr(0, 8) != "Ethernet" && it != "Linux cooked capture") {
+      frame_header.push_back(it);
+    } else if (ip_header.empty() && it.substr(0, 17) != "Internet Protocol") {
+      eth_header.push_back(it);
+    } else if (udp_header.empty() && it.substr(0, 22) != "User Datagram Protocol") {
+      ip_header.push_back(it);
+    } else if (rtps_header.empty() && it.substr(0, 41) != "Real-Time Publish-Subscribe Wire Protocol") {
+      udp_header.push_back(it);
+    } else if (rtps_submessages.empty() && it.find("submessageId:") == std::string::npos) {
+      rtps_header.push_back(it);
+    } else if (it.find("submessageId:") != std::string::npos) {
+      rtps_submessages.emplace_back();
+      rtps_submessages.back().push_back(it);
     } else {
-      rtps_submessages.back().push_back(*it);
+      rtps_submessages.back().push_back(it);
     }
   }
 
@@ -687,8 +687,8 @@ void process_frame(const string_vec& tshark_frame_data, std::map<size_t, rtps_fr
 }
 
 void process_frame_data(const tshark_frame_map& fd, std::map<size_t, rtps_frame>& frames, ip_frag_map& ifm) {
-  for (auto it = fd.begin(); it != fd.end(); ++it) {
-    process_frame(it->second, frames, ifm);
+  for (const auto & it : fd) {
+    process_frame(it.second, frames, ifm);
   }
 }
 

@@ -3,9 +3,10 @@
 #include <iostream>
 
 fuzzy_bool::fuzzy_bool() : fbv(FBV_UNKNOWN) {}
+fuzzy_bool::fuzzy_bool(fuzzy_bool&& val) noexcept : fbv(val.fbv) {}
 fuzzy_bool::fuzzy_bool(bool val) : fbv(val ? FBV_TRUE : FBV_FALSE) {}
 
-fuzzy_bool& fuzzy_bool::operator=(const fuzzy_bool& rhs) {
+fuzzy_bool& fuzzy_bool::operator=(fuzzy_bool&& rhs) noexcept {
   if (&rhs != this) {
     fbv = rhs.fbv;
   }
@@ -22,7 +23,7 @@ fuzzy_bool::operator bool() const {
     std::cout << "ERROR! fuzzy_bool value is still unknown!" << std::endl;
     return false;
   }
-  return fbv == FBV_TRUE ? true : false;
+  return fbv == FBV_TRUE;
 }
 
 fuzzy_bool& fuzzy_bool::merge(const fuzzy_bool& rhs) {

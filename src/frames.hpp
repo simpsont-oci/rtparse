@@ -2,9 +2,9 @@
 
 #include "common_types.hpp"
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 struct rtps_info_dst{
   size_t sm_order;
@@ -82,8 +82,8 @@ struct rtps_frame {
   std::vector<rtps_acknack> acknack_vec;
 };
 
-typedef std::map<size_t, rtps_frame> rtps_frame_map;
-typedef std::map<std::string, std::pair<std::pair<size_t, double>, size_t>> ip_frag_map;
+using rtps_frame_map = std::map<size_t, rtps_frame>;
+using ip_frag_map = std::map<std::string, std::pair<std::pair<size_t, double>, size_t>>;
 
 std::vector<rtps_info_dst>::const_iterator find_previous_dst(const rtps_frame& frame, size_t sm_order_limit);
 

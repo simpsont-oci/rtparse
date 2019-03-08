@@ -18,7 +18,7 @@ struct conversation_info {
   std::vector<an_info_pair> acknacks;
 };
 
-typedef std::map<std::string, std::map<std::string, conversation_info>> conversation_map;
+using conversation_map = std::map<std::string, std::map<std::string, conversation_info>>;
 
 void copy_endpoint_details_relevant_to_conversation(const endpoint_info& writer, const endpoint_info& reader, const endpoint_map& em, conversation_info& conv);
 void gather_conversation_info(const rtps_frame_map& frames, const endpoint_map& em, conversation_map& cm);

@@ -3,13 +3,13 @@
 #include "info_pairs.hpp"
 #include "endpoint_info.hpp"
 
-#include <vector>
-#include <utility>
-#include <string>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
 
-typedef std::vector<std::pair<const rtps_frame*, const rtps_data*>> data_info_pair_vec;
+using data_info_pair_vec = std::vector<std::pair<const rtps_frame*, const rtps_data*>>;
 
 void filter_spdp_announcements(const data_info_pair_vec& in, size_t fnum, const std::string& wguid, const std::string& rguid, data_info_pair_vec& out);
 void filter_sedp_announcements(const data_info_pair_vec& in, size_t fnum, const std::string& wguid, const std::string& rguid, data_info_pair_vec& out);

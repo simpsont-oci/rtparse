@@ -6,12 +6,16 @@ class fuzzy_bool {
 public:
 
   fuzzy_bool();
-  fuzzy_bool(bool val);
+  fuzzy_bool(const fuzzy_bool& v) = default;
+  fuzzy_bool(fuzzy_bool&& v) noexcept;
+  explicit fuzzy_bool(bool val);
+  virtual ~fuzzy_bool() = default;
 
-  fuzzy_bool& operator=(const fuzzy_bool& rhs);
+  fuzzy_bool& operator=(const fuzzy_bool& rhs) = default;
+  fuzzy_bool& operator=(fuzzy_bool&& rhs) noexcept;
   fuzzy_bool& operator=(bool rhs);
 
-  operator bool() const;
+  explicit operator bool() const;
 
   fuzzy_bool& merge(const fuzzy_bool& rhs);
 

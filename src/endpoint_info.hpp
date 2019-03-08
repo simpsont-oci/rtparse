@@ -4,21 +4,18 @@
 #include "fuzzy_bool.hpp"
 #include "info_pairs.hpp"
 
+#include <iostream>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
-#include <iostream>
 
 struct endpoint_info {
-  endpoint_info() : guid(), src_net(), domain_id(0xFF), first_evidence_frame(0), first_evidence_time(-1.0), reliable() {}
-  endpoint_info(const endpoint_info& val) : guid(val.guid), src_net(val.src_net), dst_net_map(val.dst_net_map), domain_id(val.domain_id), first_evidence_frame(val.first_evidence_frame), first_evidence_time(val.first_evidence_time), reliable(val.reliable) {}
-
   std::string guid;
   net_info src_net;
   net_info_map dst_net_map;
-  size_t domain_id;
-  size_t first_evidence_frame;
-  double first_evidence_time;
+  size_t domain_id{0xFF};
+  size_t first_evidence_frame{0};
+  double first_evidence_time{-1.0};
   fuzzy_bool reliable;
   std::vector<data_info_pair> spdp_announcements;
   std::vector<data_info_pair> sedp_announcements;
@@ -28,7 +25,7 @@ struct endpoint_info {
   std::vector<an_info_pair> acknacks;
 };
 
-typedef std::map<std::string, endpoint_info> endpoint_map;
+using endpoint_map = std::map<std::string, endpoint_info>;
 
 std::ostream& operator<<(std::ostream& os, const endpoint_info& info);
 
