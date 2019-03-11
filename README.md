@@ -39,6 +39,8 @@ $ ./rtparse --file example.tshark.verbose.txt
 
 ### Contributing / Future Work
 > A few thoughts for future development
+- Support for parsing version / vendor as opposed to just assuming OpenDDS
+- Support for parsing actual builtin endpoint flags as opposed to just assuming OpenDDS builtins (Part/PartMess/Pub/Sub writers/readers)
 - Separation of frames summary and frames output (split --show-conversation-frames)
 - Support for parsing & frames output for raw pcap files (bypassing tshark, allowing frames to be reloaded into pcap analysis tool like wireshark)
 - Support for parsing / analyzing DATA_FRAG, HEARTBEAT_FRAG, and NACK_FRAG submessages
