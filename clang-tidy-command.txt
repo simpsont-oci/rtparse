@@ -1,0 +1,1 @@
+clang-tidy -checks=*,-fuchsia*,-llvm-header-guard,-google-runtime-references src/*.?pp -- -Isrc

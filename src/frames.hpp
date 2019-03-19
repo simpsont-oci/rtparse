@@ -25,6 +25,7 @@ struct rtps_data {
   string_vec metatraffic_unicast_locator_ports;
   string_vec metatraffic_multicast_locator_ips;
   string_vec metatraffic_multicast_locator_ports;
+  uint32_t builtins;
   std::string endpoint_guid;
   string_vec unicast_locator_ips;
   string_vec unicast_locator_ports;

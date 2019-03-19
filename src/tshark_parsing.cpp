@@ -241,6 +241,7 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
   bool endpoint_reliability = false;
   bool unregistered = false;
   bool disposed = false;
+  uint32_t builtins = 0;
 
   //std::cout << "data submessage:" << std::endl;
   if (rtps_submessage.size() > 1) {
@@ -253,7 +254,7 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
   }
 
   for (auto it = rtps_submessage.begin(); it != rtps_submessage.end(); ++it) {
-    size_t rpos, wpos, spos, pgpos, egpos, mulpos, ulpos, rwpos;
+    size_t rpos, wpos, spos, pgpos, egpos, mulpos, ulpos, rwpos, bpos;
     if ((rpos = it->find("readerEntityId: 0x")) != std::string::npos) {
       reader_id = it->substr(rpos + 18, 8);
       //std::cout << " - reader_id = " << reader_id << std::endl;
@@ -355,6 +356,13 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
         endpoint_reliability = (kind == "RELIABLE_RELIABILITY_QOS (0x00000002)");
         //std::cout << " - endpoint_reliability " << endpoint_reliability << std::endl;
       }
+    } else if ((bpos = it->find("  PID_BUILTIN_ENDPOINT_SET")) != std::string::npos) {
+      auto it2 = it; ++it2; ++it2; ++it2;
+      if ((bpos = it2->find("Flags: ")) != std::string::npos) {
+        std::stringstream ss(it2->substr(bpos + 7));
+        ss >> std::hex >> builtins;
+      }
+      //std::cout << " - builtin endpoint flags " << std::hex << builtins << std::endl;
     }
   }
 
@@ -372,6 +380,7 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
       data.metatraffic_unicast_locator_ports = metatraffic_unicast_locator_ports;
       data.metatraffic_multicast_locator_ips = metatraffic_multicast_locator_ips;
       data.metatraffic_multicast_locator_ports = metatraffic_multicast_locator_ports;
+      data.builtins = builtins;
     }
     if (endpoint_guid.length() == 32) {
       data.endpoint_guid = endpoint_guid;

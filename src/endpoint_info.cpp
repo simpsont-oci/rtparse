@@ -103,37 +103,77 @@ void gather_endpoint_info(const std::map<size_t, rtps_frame>& frames, endpoint_m
         spdp_info.first_evidence_time = dataw_info.first_evidence_time;
         spdp_info.spdp_announcements.emplace_back(data_info_pair(&(frame.second), &(*dit)));
 
-        spdp_info.guid = dit->participant_guid.substr(0, 24) + "000100c2"; // Participant Writer
-        spdp_info.reliable = false;
-        create_or_merge_endpoint_info(spdp_info, em);
+        if ((dit->builtins & (0x00000001u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + "000100c2"; // Participant Writer
+          spdp_info.reliable = false;
+          create_or_merge_endpoint_info(spdp_info, em);
+        }
 
-        spdp_info.guid = dit->participant_guid.substr(0, 24) + "000100c7"; // Participant Reader
-        spdp_info.reliable = false;
-        create_or_merge_endpoint_info(spdp_info, em);
+        if ((dit->builtins & (0x00000001u << 1u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + "000100c7"; // Participant Reader
+          spdp_info.reliable = false;
+          create_or_merge_endpoint_info(spdp_info, em);
+        }
 
-        spdp_info.guid = dit->participant_guid.substr(0, 24) + "000003c2"; // Publications Writer
-        spdp_info.reliable = true;
-        create_or_merge_endpoint_info(spdp_info, em);
+        if ((dit->builtins & (0x00000001u << 2u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + "000003c2"; // Publications Writer
+          spdp_info.reliable = true;
+          create_or_merge_endpoint_info(spdp_info, em);
+        }
 
-        spdp_info.guid = dit->participant_guid.substr(0, 24) + "000003c7"; // Publications Reader
-        spdp_info.reliable = true;
-        create_or_merge_endpoint_info(spdp_info, em);
+        if ((dit->builtins & (0x00000001u << 3u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + "000003c7"; // Publications Reader
+          spdp_info.reliable = true;
+          create_or_merge_endpoint_info(spdp_info, em);
+        }
 
-        spdp_info.guid = dit->participant_guid.substr(0, 24) + "000004c2"; // Subscriptions Writer
-        spdp_info.reliable = true;
-        create_or_merge_endpoint_info(spdp_info, em);
+        if ((dit->builtins & (0x00000001u << 4u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + "000004c2"; // Subscriptions Writer
+          spdp_info.reliable = true;
+          create_or_merge_endpoint_info(spdp_info, em);
+        }
 
-        spdp_info.guid = dit->participant_guid.substr(0, 24) + "000004c7"; // Subscriptions Reader
-        spdp_info.reliable = true;
-        create_or_merge_endpoint_info(spdp_info, em);
+        if ((dit->builtins & (0x00000001u << 5u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + "000004c7"; // Subscriptions Reader
+          spdp_info.reliable = true;
+          create_or_merge_endpoint_info(spdp_info, em);
+        }
 
-        spdp_info.guid = dit->participant_guid.substr(0, 24) + "000200c2"; // Participant Message Writer
-        spdp_info.reliable = true;
-        create_or_merge_endpoint_info(spdp_info, em);
+        if ((dit->builtins & (0x00000001u << 6u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + ""; // Participant Proxy Writer
+          spdp_info.reliable = true;
+          //create_or_merge_endpoint_info(spdp_info, em); // If we don't have an entity ID for this (from the spec), we can't add it
+        }
 
-        spdp_info.guid = dit->participant_guid.substr(0, 24) + "000200c7"; // Participant Message Reader
-        spdp_info.reliable = true;
-        create_or_merge_endpoint_info(spdp_info, em);
+        if ((dit->builtins & (0x00000001u << 7u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + ""; // Participant Proxy Reader
+          spdp_info.reliable = true;
+          //create_or_merge_endpoint_info(spdp_info, em); // If we don't have an entity ID for this (from the spec), we can't add it
+        }
+
+        if ((dit->builtins & (0x00000001u << 8u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + ""; // Participant State Writer
+          spdp_info.reliable = true;
+          //create_or_merge_endpoint_info(spdp_info, em); // If we don't have an entity ID for this (from the spec), we can't add it
+        }
+
+        if ((dit->builtins & (0x00000001u << 9u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + ""; // Participant State Reader
+          spdp_info.reliable = true;
+          //create_or_merge_endpoint_info(spdp_info, em); // If we don't have an entity ID for this (from the spec), we can't add it
+        }
+
+        if ((dit->builtins & (0x00000001u << 10u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + "000200c2"; // Participant Message Writer
+          spdp_info.reliable = true;
+          create_or_merge_endpoint_info(spdp_info, em);
+        }
+
+        if ((dit->builtins & (0x00000001u << 11u)) != 0u) {
+          spdp_info.guid = dit->participant_guid.substr(0, 24) + "000200c7"; // Participant Message Reader
+          spdp_info.reliable = true;
+          create_or_merge_endpoint_info(spdp_info, em);
+        }
       }
       if (!dit->endpoint_guid.empty()) {
         endpoint_info sedp_info;
