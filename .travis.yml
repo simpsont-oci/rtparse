@@ -7,6 +7,10 @@ compiler:
   - clang
 
 addons:
+  sonarcloud:
+    organization: "simpsont-oci-github"
+    token:
+      secure: "c0c2439632339ff95c5fbe6389930c8a8d1a3bda"
   apt:
     sources:
       - ubuntu-toolchain-r-test
@@ -22,4 +26,5 @@ before_script:
   - cmake .
 
 script:
+  - sonar-scanner
   - make
