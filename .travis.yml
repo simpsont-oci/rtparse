@@ -1,30 +1,24 @@
 dist: xenial
-
 language: cpp
-
 compiler:
-  - gcc
-  - clang
-
+- gcc
+- clang
 addons:
   sonarcloud:
     organization: "simpsont-oci-github"
     token:
-      secure: "c0c2439632339ff95c5fbe6389930c8a8d1a3bda"
+      secure: "ed9bc8HHxASXfAf733hiv3psrk7ZfmsvXS2c1QZdA5bjrdVmk/8ommWOPFXBnSBFvh8SXOox6bJW1zMZPLP+U/fJKtmg80ewQyA9cn+FIKQbIuxl+zCrJxSu5NSX5Z5F4BomP2qJQrAOtRREPV5I0Se+WwT3o/Zwp0n2zBkH8/jdn8q/7wTFoP0CG5dp+3zG8B+Ttu7rvQjWyFLPI0Vcqaz2FpH2cO7X2/IJ7/U05N429C3pHGvO8wNFFiM5MTrBzLGSQo76ppAq3I6bxF481JAskkPHEnpy9Bb4g+JLkwLMKOci7ndGs/F3sdKY33FiBv1k9Qvynz49BNeVhKn9Min8d2HkK/xrfOw3mGioMj4oHD+vUeNVeB8ETczXTC4FVClUIlZQB4LPTmJkdTFsNGKOpO5f10aCfrYdedS7+TBwFPq3iMtUSibsB52SDJVh8hWU79vI3EFKqg46e11A6XtxJBtBNupfMwYrZviJeen2ENmYacwvJ0GyL2u+i6cRoK7JnyjETPvggx/yBaP2wQdFbXaiZ8g8U+cDcpENCaFddI7OCSwp6byA1PoIR5gSSx6v7lhsZ7SLVpucimtcjzSMMhsSdJ8KzToHShQWVj0uhOn7PujhkbQamThkAFXeMwo5oAVEIQXlKDOugpChQGr8Hc3SkYP5UYXc6Uo4I/g="
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
-      - libboost-program-options-dev
-      - cmake
-
+    - libboost-program-options-dev
+    - cmake
 branches:
   only:
-    - master
-
+  - master
 before_script:
-  - cmake .
-
+- cmake .
 script:
-  - sonar-scanner
-  - make
+- sonar-scanner
+- make
