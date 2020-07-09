@@ -242,6 +242,7 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
   bool unregistered = false;
   bool disposed = false;
   uint32_t builtins = 0;
+  uint32_t domain_id = 0;
 
   //std::cout << "data submessage:" << std::endl;
   if (rtps_submessage.size() > 1) {
@@ -363,6 +364,13 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
         ss >> std::hex >> builtins;
       }
       //std::cout << " - builtin endpoint flags " << std::hex << builtins << std::endl;
+    } else if ((bpos = it->find("  PID_RTI_DOMAIN_ID")) != std::string::npos) {
+      auto it2 = it; ++it2; ++it2; ++it2;
+      if ((bpos = it2->find("domain_id: ")) != std::string::npos) {
+        std::stringstream ss(it2->substr(bpos + 11));
+        ss >> domain_id;
+      }
+      //std::cout << " - domain id " << domain_id << std::endl;
     }
   }
 
@@ -393,6 +401,7 @@ bool process_rtps_data_submessage(const string_vec& rtps_submessage, rtps_frame&
     }
     data.sm_order = sm_order;
     frame.data_vec.push_back(data);
+    frame.domain_id = domain_id;
     result = true;
   }
   return result;

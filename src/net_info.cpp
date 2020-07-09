@@ -14,8 +14,8 @@ std::ostream& operator<<(std::ostream& os, const std::map<std::string, net_info>
   os << "[ " << std::flush;
   if (!nm.empty()) {
     std::cout << nm.begin()->second << std::flush;
+    std::for_each(++(nm.begin()), nm.end(), [&](const auto& v) { os << ", " << v.second << std::flush; });
   }
-  std::for_each(++(nm.begin()), nm.end(), [&](const auto& v) { os << ", " << v.second << std::flush; });
   return os << " ]" << std::flush;
 }
 

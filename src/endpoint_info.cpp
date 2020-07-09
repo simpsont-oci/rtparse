@@ -66,10 +66,12 @@ void gather_participant_info(const std::map<size_t, rtps_frame>& frames, endpoin
         info.reliable = false;
         info.guid = frame.second.guid_prefix + dit->writer_id;
 
-        uint16_t port = 0;
-        std::stringstream ss(frame.second.dst_port);
-        ss >> port;
-        info.domain_id = (port < 7400 ? 0xFF : static_cast<uint16_t>(port - 7400) / 250);
+        if (info.domain_id == 0) {
+          uint16_t port = 0;
+          std::stringstream ss(frame.second.dst_port);
+          ss >> port;
+          info.domain_id = (port < 7400 ? 0xFF : static_cast<uint16_t>(port - 7400) / 250);
+        }
 
         create_or_merge_endpoint_info(info, em);
       }
